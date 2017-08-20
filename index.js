@@ -2,8 +2,13 @@ const chalk = require('chalk');
 const winston = require('winston');
 const winlog = require('winston-loggly-bulk');
 
-const attach = (token, subdomain, json=true, tags=["Winston-NodeJS"]) => {
-    winston.add(winston.transports.Loggly, {token, subdomain, tags, json});
+const attach = opts => {
+    winston.add(winston.transports.Loggly, {
+        token: opts.token,
+        subdomain: opts.subdomain,
+        tags: ["Winston-NodeJS"],
+        json: true
+    });
 };
 
 const error = err => {
