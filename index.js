@@ -20,26 +20,24 @@ const log = msg => {
     winston.log('info', msg);
 };
 
-const errorHandler = () => {
-    return (err, req, res, next) => {
-        if (err instanceof NotFound) {
-            res.status(404).json({
-                errors: ['ResourceNotFound'],
-                message: 'The resource you are requesting does not exist or was moved.'
-            });
-        } else {
-            if (process.env.NODE_ENV === 'development') {
-                console.log(chalk.bold.bgRed('\n-= A U R A  E R R O R  R E P O R T E R =-\n'));
+const errorHandler = (err, req, res, next) => {
+    if (err instanceof NotFound) {
+        res.status(404).json({
+            errors: ['ResourceNotFound'],
+            message: 'The resource you are requesting does not exist or was moved.'
+        });
+    } else {
+        if (process.env.NODE_ENV === 'development') {
+            console.log(chalk.bold.bgRed('\n-= A U R A  E R R O R  R E P O R T E R =-\n'));
 
-                if (req.route) {
-                    console.log(chalk.bold.green(`ROUTE: ${req.route.path}  &&  METHOD: ${req.route.stack[0].method.toUpperCase()}\n`));
-                }
-
-                console.error(chalk.bold(err.stack) + '\n');
+            if (req.route) {
+                console.log(chalk.bold.green(`ROUTE: ${req.route.path}  &&  METHOD: ${req.route.stack[0].method.toUpperCase()}\n`));
             }
 
-            res.status(500).send(err.stack);
+            console.error(chalk.bold(err.stack) + '\n');
         }
+
+        res.status(500).send(err.stack);
     }
 };
 
