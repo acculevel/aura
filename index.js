@@ -20,6 +20,15 @@ const log = msg => {
     winston.log('info', msg);
 };
 
+const notFoundHandler = () => {
+    return (req, res, next) => {
+        res.status(404).json({
+            errors: ['ResourceNotFound'],
+            message: 'The resource you are requesting does not exist or was moved.'
+        });
+    }
+};
+
 const errorHandler = () => {
     return (err, req, res, next) => {
         if (process.env.NODE_ENV === 'development') {
@@ -40,5 +49,6 @@ module.exports = {
     attach,
     error,
     log,
+    notFoundHandler,
     errorHandler
 };
