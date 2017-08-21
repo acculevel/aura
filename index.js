@@ -2,6 +2,12 @@ const chalk = require('chalk');
 const winston = require('winston');
 const winlog = require('winston-loggly-bulk');
 
+const NotFound = () => {
+    this.name = 'Not Found';
+    Error.call(this, msg);
+    Error.captureStackTrace(this, arguments.callee);
+}
+
 const attach = opts => {
     winston.add(winston.transports.Loggly, {
         token: opts.token,
@@ -20,24 +26,26 @@ const log = msg => {
     winston.log('info', msg);
 };
 
-const errorHandler = (err, req, res, next) => {
-    if (err instanceof NotFound) {
-        res.status(404).json({
-            errors: ['ResourceNotFound'],
-            message: 'The resource you are requesting does not exist or was moved.'
-        });
-    } else {
-        if (process.env.NODE_ENV === 'development') {
-            console.log(chalk.bold.bgRed('\n-= A U R A  E R R O R  R E P O R T E R =-\n'));
+const errorHandler = () => {
+    return (err, req, res, next) => {
+        if (err instanceof NotFound) {
+            res.status(404).json({
+                errors: ['ResourceNotFound'],
+                message: 'The resource you are requesting does not exist or was moved.'
+            });
+        } else {
+            if (process.env.NODE_ENV === 'development') {
+                console.log(chalk.bold.bgRed('\n-= A U R A  E R R O R  R E P O R T E R =-\n'));
 
-            if (req.route) {
-                console.log(chalk.bold.green(`ROUTE: ${req.route.path}  &&  METHOD: ${req.route.stack[0].method.toUpperCase()}\n`));
+                if (req.route) {
+                    console.log(chalk.bold.green(`ROUTE: ${req.route.path}  &&  METHOD: ${req.route.stack[0].method.toUpperCase()}\n`));
+                }
+
+                console.error(chalk.bold(err.stack) + '\n');
             }
 
-            console.error(chalk.bold(err.stack) + '\n');
+            res.status(500).send(err.stack);
         }
-
-        res.status(500).send(err.stack);
     }
 };
 
