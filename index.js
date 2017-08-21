@@ -27,7 +27,7 @@ const _handle404 = (req, res, next) => {
     });
 };
 
-const _handle5xx = (err, res, res, next) => {
+const _handle5xx = (err, req, res, next) => {
     if (process.env.NODE_ENV === 'development') {
         console.log(chalk.bold.bgRed('\n-= A U R A  E R R O R  R E P O R T E R =-\n'));
 
